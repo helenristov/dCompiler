@@ -9,7 +9,7 @@
 #'
 #'@export
 
-getContractMPP <- function(Contract, TT_MPP = FALSE){
+getContractMPP <- function(Contract, TT_MPP = FALSE, IB_MinTick = FALSE){
   Asset <- getContractAsset(Contract)
   
   MPP <- switch(Asset,
@@ -18,7 +18,7 @@ getContractMPP <- function(Contract, TT_MPP = FALSE){
                  ZN = , US = , AUB = , AUL = ,
                 FLG = ,  G = ,   H = ,  DX =   MoneyPerPoint <- 1000  ,
                  TU = , ZT =                   MoneyPerPoint <- 2000  ,
-                LGO = , TF =                   MoneyPerPoint <- 100   ,
+                LGO = , TFS=                   MoneyPerPoint <- 100   ,
                 HO  = , RB =                   MoneyPerPoint <- 42000 ,
                 #ED  = , GE =                   MoneyPerPoint <- ifelse(getContractType(Contract) %in% c('PK', 'PS', 'PB', paste0('FB', c(1:5))), switch(getContractType(Contract), PK = , PS = , PB = mpp <- 10000, FB2 = 20000, FB3 = 30000, FB4 = 40000, FB5 = 50000), 2500),
                 ED  = , GE = , BAX =           MoneyPerPoint <- 2500  ,
@@ -74,6 +74,11 @@ getContractMPP <- function(Contract, TT_MPP = FALSE){
   if(is.null(MPP)){ stop(paste0(Asset, " is an unknown asset class for getContractMPP.")) }
   
   if(TT_MPP){ MPP <- MPP / (getContractMT(Contract, TT_MinTick = TRUE) / getContractMT(Contract)) }
+  
+  if(IB_MinTick){
+    Adj <- switch(Asset, KC = Adj <- 100, 1)
+    MPP <- MPP * Adj
+  }
   
   return(MPP)
 }

@@ -9,7 +9,7 @@
 #'
 #'@export
 
-getContractMT <- function(Contract, TT_MinTick = FALSE){
+getContractMT <- function(Contract, TT_MinTick = FALSE, IB_MinTick = FALSE){
   ##### Determine Asset
   Asset <- getContractAsset(Contract)
   
@@ -28,7 +28,7 @@ getContractMT <- function(Contract, TT_MinTick = FALSE){
                 ZB = ,  US = , AUB = , AUL =               MinTick <- 1.00 / 32,
                 ES = ,  NQ =                               MinTick <- ifelse(TT_MinTick, 25, 0.25) ,  
                 YM =                                       MinTick <- 1        ,
-                TF = , EMX =                               MinTick <- 0.1      ,
+               TFS = , EMX =                               MinTick <- 0.1      ,
                FFI =                                       MinTick <- 0.5      ,
                 AD = , URO = ,  BP = ,  CD = ,  SF =       MinTick <- ifelse(TT_MinTick, 1, 0.0001),
                 MP =                                       MinTick <- 10       ,
@@ -70,6 +70,11 @@ getContractMT <- function(Contract, TT_MinTick = FALSE){
   }
   
   if(is.null(MT)){ stop(paste0(Asset, " is an unknown asset class for getContractMT.")) }
+  
+  if(IB_MinTick){
+    Adj <- switch(Asset, KC = Adj <- 0.01, 1)
+    MT <- MT * Adj
+  }
   
   return(MT)
 }
